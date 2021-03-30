@@ -1,12 +1,15 @@
-FROM golang:1.15
-WORKDIR /
+FROM alpine:3.13.3
 
-COPY  testmachine.go ./main.go
-COPY go.sum ./go.sum
-COPY go.mod ./go.mod
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.4/main/" > /etc/apk/repositories
 
-ENV GOPROXY=https://goproxy.io,direct
-RUN go mod download
-RUN go build -o testmachine ./main.go 
+RUN apk update \
+        && apk upgrade \
+        && apk add --no-cache bash \
+        bash-doc \
+        bash-completion \
+        && rm -rf /var/cache/apk/* \
+        && /bin/bash
 
-CMD ["./testmachine"]
+ADD testmachine /
+CMD ["/testmachine"]
+
